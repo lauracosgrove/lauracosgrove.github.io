@@ -21,7 +21,7 @@ In the spirit of Halloween and midterm season, let's filter the Instacart data t
 data(instacart)
 
 instacart <- instacart %>%
- filter(order_hour_of_day <= 5) 
+ filter(order_hour_of_day <= 4) 
 
 ```
 
@@ -64,10 +64,13 @@ instacart %>%
   add_tally() %>% 
   ungroup() %>% 
   mutate(order_dow = factor(order_dow, levels = 0:6, labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))) %>%
-  plot_ly(x = ~ order_dow, y = ~order_hour_of_day, z = ~n, type = "heatmap")
+  plot_ly(x = ~ order_dow, y = ~order_hour_of_day, z = ~n, type = "heatmap") %>% 
+  layout(xaxis = list(title = "Day of Week"), 
+         yaxis = list(title = "Hour of Day"), 
+         showlegend = FALSE)
 ```
 
-### Quantity of Products Ordered
+### Quantity of Products Ordered, by Days Since Last Order
 
 Does quantity of products in a single order change based on days since last order? 
 
@@ -78,6 +81,10 @@ instacart %>%
   tally() %>% 
   ungroup() %>% 
   mutate(days_since_prior_order = factor(cut_interval(days_since_prior_order, length = 7))) %>% 
-  plot_ly(color = ~ days_since_prior_order, y = ~n, type = "box")
-  
+  plot_ly(color = ~ days_since_prior_order, y = ~n, type = "box") %>% 
+  add_annotations( text="Days", xref="paper", yref="paper",
+                  x=1.02, xanchor="left",
+                  y=0.8, yanchor="bottom",   
+                  legendtitle=TRUE, showarrow=FALSE ) %>%
+  layout(legend=list(y=0.8, yanchor="top" ) )  
 ```
