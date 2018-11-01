@@ -34,7 +34,7 @@ Column {data-width=600}
 
 Among late-night orderers who ordered just a few items, what were the most popular departments and aisles?
 
-```{r plotly columb plot}
+```{r plotly column plot}
 instacart %>%
   group_by(order_id) %>% 
   add_tally() %>% 
@@ -45,6 +45,7 @@ instacart %>%
   add_tally() %>% 
   ungroup() %>% 
   mutate(department = forcats::fct_reorder(department, nn)) %>% 
+  mutate(aisle = forcats::fct_reorder(aisle, nn)) %>% 
   plot_ly(y = ~department, x = ~nn, color = ~aisle, type = "bar") %>% 
   layout(barmode = "stack")
 
@@ -63,12 +64,12 @@ instacart %>%
   add_tally() %>% 
   ungroup() %>% 
   mutate(order_dow = factor(order_dow, levels = 0:6, labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))) %>%
-  plot_ly(x = ~ order_dow, y = ~order_hour_of_day, z = ~n, type = "heatmap") 
+  plot_ly(x = ~ order_dow, y = ~order_hour_of_day, z = ~n, type = "heatmap")
 ```
 
 ### Quantity of Products Ordered
 
-Does the amount of products ordered in a single order change based on days since of last order? 
+Does quantity of products in a single order change based on days since last order? 
 
 ```{r plotly box plot}
 
