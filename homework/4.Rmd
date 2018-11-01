@@ -27,10 +27,10 @@ instacart <- instacart %>%
 
 
 
-Column {data-width=650}
+Column {data-width=600}
 ----------------------------------------------------------------------
 
-### Chart A
+### Popular Departments
 
 Among late-night orderers who ordered just a few items, what were the most popular departments and aisles?
 
@@ -50,30 +50,33 @@ instacart %>%
 
 ```
 
-Column {data-width=350}
+Column {data-width=400}
 -----------------------------------------------------------------------
 
-### Chart B
+### Popular Times to Order
 
-When are the highest-volume orders, by day of week and hour of day?
+When are the most items ordered, by day of week and hour of day?
 
 ```{r plotly heat map}
 instacart %>% 
-  group_by(order_id) %>% 
+  group_by(order_hour_of_day, order_dow) %>% 
   add_tally() %>% 
-  plot_ly(x = ~ order_dow, y = ~order_hour_of_day, z = ~n, type = "heatmap")
-
+  ungroup() %>% 
+  mutate(order_dow = factor(order_dow, levels = 0:6, labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))) %>%
+  plot_ly(x = ~ order_dow, y = ~order_hour_of_day, z = ~n, type = "heatmap") 
 ```
 
-### Chart C
+### Quantity of Products Ordered
 
-How frequent Instacart orderers are these late-night orderers?
+Does the amount of products ordered in a single order change based on days since of last order? 
 
 ```{r plotly box plot}
 
 instacart %>%
   group_by(days_since_prior_order, order_id) %>% 
   tally() %>% 
-  plot_ly(x = ~ days_since_prior_order, y = ~n, type = "box")
+  ungroup() %>% 
+  mutate(days_since_prior_order = factor(cut_interval(days_since_prior_order, length = 7))) %>% 
+  plot_ly(color = ~ days_since_prior_order, y = ~n, type = "box")
   
 ```
