@@ -1,0 +1,79 @@
+---
+title: "Instacart Orders in the Witching Hours"
+author: "Laura Cosgrove"
+date: "10/28/2018"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(viridis)
+library(plotly)
+library(p8105.datasets)
+library(flexdashboard)
+```
+In the spirit of Halloween and midterm season, let's filter the Instacart data to look specifically at orders placed between midnight and 4 a.m. -- by far the least popular times to order groceries on Instacart.
+
+```{r data, include = FALSE}
+data(instacart)
+
+instacart <- instacart %>%
+ filter(order_hour_of_day <= 5) 
+
+```
+
+
+
+Column {data-width=650}
+----------------------------------------------------------------------
+
+### Chart A
+
+Among late-night orderers who ordered just a few items, what were the most popular departments and aisles?
+
+```{r plotly columb plot}
+instacart %>%
+  group_by(order_id) %>% 
+  add_tally() %>% 
+  filter(n < 4) %>% 
+  select(order_id, product_id, product_name, order_dow, order_hour_of_day, days_since_prior_order, aisle, department, n) %>%
+  ungroup() %>% 
+  group_by(department) %>% 
+  add_tally() %>% 
+  ungroup() %>% 
+  mutate(department = forcats::fct_reorder(department, nn)) %>% 
+  plot_ly(y = ~department, x = ~nn, color = ~aisle, type = "bar") %>% 
+  layout(barmode = "stack")
+
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+When are the highest-volume orders, by day of week and hour of day?
+
+```{r plotly heat map}
+instacart %>% 
+  group_by(order_id) %>% 
+  add_tally() %>% 
+  plot_ly(x = ~ order_dow, y = ~order_hour_of_day, z = ~n, type = "heatmap")
+
+```
+
+### Chart C
+
+How frequent Instacart orderers are these late-night orderers?
+
+```{r plotly box plot}
+
+instacart %>%
+  group_by(days_since_prior_order, order_id) %>% 
+  tally() %>% 
+  plot_ly(x = ~ days_since_prior_order, y = ~n, type = "box")
+  
+```
